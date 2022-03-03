@@ -15,6 +15,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonObject;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
     EditText destination = null;
@@ -43,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
         ImageButton bikeButton = findViewById(R.id.bikeButton);
         ImageButton walkButton = findViewById(R.id.walkButton);
         ImageButton carButton = findViewById(R.id.carButton);
+        String origin = ""; //find a way to get the user's current location
+        String key = ""; //add api key
 
         bikeButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -78,10 +92,30 @@ public class MainActivity extends AppCompatActivity {
                             .show();
                 }
 
+                RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
+                //String request = "google.navigation:q=" + destinationText + "&mode=" + mode;
                 //for now, destination is just the textfield, but it should be coordinates
-                String request = "google.navigation:q=" + destinationText + "&mode=" + mode;
-                System.out.println(request); //for testing
+                String url = "https://maps.googleapis.com/maps/api/directions/json?"+ "origin="
+                        + origin + "&destination=" + destinationText + "&mode=" + mode + "&key=" + key;
 
+                //probably don't need this
+                /*JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("google.destination.q", destinationText);
+                    jsonObject.put("&mode", mode);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                 */
+
+
+                //System.out.println(request); //for testing
+                Toast.makeText(MainActivity.this, url, Toast.LENGTH_LONG).show();
+                JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,  new ResponseListener(), new ErrorListener());
+
+
+                queue.add(request);
                 /* this code probably isn't what we're looking for, it just opens a separate map.
                  * including in case its useful
                 Intent intent = new Intent(Intent.ACTION_VIEW,
@@ -104,5 +138,22 @@ public class MainActivity extends AppCompatActivity {
                 }*/
             }
         });
+
+
+    }
+    private class ResponseListener implements Response.Listener{
+        @Override
+        public void onResponse(Object response) {
+            //do the navigation
+            Toast.makeText(MainActivity.this, response.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private class ErrorListener implements Response.ErrorListener{
+        @Override
+        public void onErrorResponse(VolleyError error) {
+
+            Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 }
