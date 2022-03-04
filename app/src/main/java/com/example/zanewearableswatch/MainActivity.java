@@ -56,7 +56,10 @@ public class MainActivity extends AppCompatActivity {
         ImageButton walkButton = findViewById(R.id.walkButton);
         ImageButton carButton = findViewById(R.id.carButton);
         String origin = ""; //find a way to get the user's current location
-        String key = ""; //add api key
+        String key = "AIzaSyAUkJ-ObhbadMLikRQZ3i2_L79WB7Fug3Q"; //add api key
+
+        String testDestination = "\"ChIJyYB_SZVU2YARR-I1Jjf08F0 2920 Zoo Dr, San Diego, CA 92101, USA\"";
+        String testOrigin = "ChIJE9on3F3HwoAR9AhGJW_fL-I\n Los Angeles, CA, USA";
 
         bikeButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -96,7 +99,8 @@ public class MainActivity extends AppCompatActivity {
                 //String request = "google.navigation:q=" + destinationText + "&mode=" + mode;
                 //for now, destination is just the textfield, but it should be coordinates
                 String url = "https://maps.googleapis.com/maps/api/directions/json?"+ "origin="
-                        + origin + "&destination=" + destinationText + "&mode=" + mode + "&key=" + key;
+                        + testOrigin + "&destination=" + testDestination
+                        + "&mode=" + mode + "&key=" + key;
 
                 //probably don't need this
                 /*JSONObject jsonObject = new JSONObject();
@@ -111,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                 //System.out.println(request); //for testing
-                Toast.makeText(MainActivity.this, url, Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, url, Toast.LENGTH_LONG).show();
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,  new ResponseListener(), new ErrorListener());
 
 
@@ -141,11 +145,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    private class ResponseListener implements Response.Listener{
+    private class ResponseListener implements Response.Listener<JSONObject>{
         @Override
-        public void onResponse(Object response) {
-            //do the navigation
+        public void onResponse(JSONObject response) {
             Toast.makeText(MainActivity.this, response.toString(), Toast.LENGTH_LONG).show();
+            destination.setText(response.toString());
+            System.out.println(response.toString());
         }
     }
 
