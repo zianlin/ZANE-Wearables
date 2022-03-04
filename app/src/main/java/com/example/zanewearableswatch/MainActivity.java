@@ -11,6 +11,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,12 +26,19 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.JsonObject;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     EditText destination = null;
     String mode = "";
+    String resp = "";
 
     /*
     //current lat and long, Work in progress
@@ -117,6 +125,15 @@ public class MainActivity extends AppCompatActivity {
                 //System.out.println(request); //for testing
                 //Toast.makeText(MainActivity.this, url, Toast.LENGTH_LONG).show();
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,  new ResponseListener(), new ErrorListener());
+                ArrayList<Bundle> bundleList = parse(resp);
+
+                for (Bundle bundle : bundleList)
+                {
+                    for (String key: bundle.keySet())
+                    {
+                        Log.d("Bundle Debug", key + " = \"" + bundle.get(key) + "\"");
+                    }
+                }
 
 
                 queue.add(request);
@@ -142,14 +159,53 @@ public class MainActivity extends AppCompatActivity {
                 }*/
             }
         });
-
-
     }
+    public ArrayList<Bundle> parse(String response){
+        ArrayList<Bundle> list = new ArrayList<Bundle>();
+        try {
+            JSONObject json = new JSONObject(response);
+            JSONArray routes = json.getJSONArray("route");
+            JSONArray legs = routes.getJSONArray(0);
+            JSONArray steps = legs.getJSONArray(0);
+            for(int i=0;i<steps.length();i++) {
+                JSONObject singleStep = steps.getJSONObject(i);
+                JSONObject duration = singleStep.getJSONObject("duration");
+                Bundle dur = new Bundle();
+                dur.putString("text", duration.getString("text"));
+                dur.putString("value", duration.getString("value"));
+                JSONObject distance = singleStep.getJSONObject("distance");
+                Bundle dis = new Bundle();
+                dis.putString("text", distance.getString("text"));
+                dis.putString("value", distance.getString("value"));
+                Bundle data = new Bundle();
+                data.putBundle("duration", dur);
+                data.putBundle("distance", dis);
+                list.add(data);
+            }
+        } catch (JSONException e1) {
+            e1.printStackTrace();
+        }
+        return list;
+    }
+
+    /*
+    public String printJSONArray (JSONArray jArr) {
+        for(int i = 0; i < jArr.length();i++) {
+            JSONObject innerObj = jArr.getJSONObject(i);
+            for(Iterator it = innerObj.keys(); it.hasNext(); ) {
+                String key = (String)it.next();
+                System.out.println(key + ":" + innerObj.get(key));
+            }
+        }
+    }*/
+
+
     private class ResponseListener implements Response.Listener<JSONObject>{
         @Override
         public void onResponse(JSONObject response) {
             Toast.makeText(MainActivity.this, response.toString(), Toast.LENGTH_LONG).show();
             destination.setText(response.toString());
+            resp = response.toString();
             System.out.println(response.toString());
         }
     }
