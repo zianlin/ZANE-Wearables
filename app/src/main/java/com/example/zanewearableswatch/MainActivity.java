@@ -68,8 +68,6 @@ public class MainActivity extends AppCompatActivity {
     String destination = "";
     String key = "AIzaSyAUkJ-ObhbadMLikRQZ3i2_L79WB7Fug3Q"; //add api key
     String mode = "";
-    double latitude = LocationService.latitude;
-    double longitude = LocationService.longitude;
     ArrayList<Step> steps = new ArrayList<Step>();
 
     //POJO for step data parsed from call to Directions API
@@ -161,8 +159,8 @@ public class MainActivity extends AppCompatActivity {
         navigateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Navigation start: current lat and long is", latitude + " " + longitude);
-                origin = latitude + "," + longitude;
+                origin = LocationService.latitude + "," + LocationService.longitude;
+                Log.d("Navigation start: origin is ", origin);
                 destination = ((EditText)findViewById(R.id.destination)).getText().toString();
 
                 if (destination.equals("") || mode == "") {
@@ -181,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
                         + "origin=" + origin + "&destination=" + destination
                         + "&mode=" + mode + "&key=" + key;
 
+                Log.d("url", url);
                 JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url, null, new ResponseListener(), new ErrorListener());
                 queue.add(jsonRequest);
             }
