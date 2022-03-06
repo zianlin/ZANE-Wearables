@@ -94,18 +94,27 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d("User selects", "biking");
                 mode = "b";
+                bikeButton.setImageResource(R.drawable.bikeon);
+                walkButton.setImageResource(R.drawable.walkoff);
+                carButton.setImageResource(R.drawable.caroff);
             }
         });
         walkButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.d("User selects", "walking");
                 mode = "w";
+                bikeButton.setImageResource(R.drawable.bikeoff);
+                walkButton.setImageResource(R.drawable.walkon);
+                carButton.setImageResource(R.drawable.caroff);
             }
         });
         carButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.d("User selects", "driving");
                 mode = "d";
+                bikeButton.setImageResource(R.drawable.bikeoff);
+                walkButton.setImageResource(R.drawable.walkoff);
+                carButton.setImageResource(R.drawable.caron);
             }
         });
 

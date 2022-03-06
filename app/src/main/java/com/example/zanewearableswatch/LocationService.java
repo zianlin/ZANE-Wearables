@@ -56,6 +56,7 @@ public class LocationService extends Service {
                     target.setLongitude((steps.get(0).getStart()).lng);
                     Log.d("distance to next step", String.valueOf(location.distanceTo(target)));
                     if(location.distanceTo(target) < 50) { //50 meters
+                        if (steps.size() == 1) Log.d("d", "You are here!");
                         Log.d(String.valueOf(getDirection(steps.get(0).getManeuver())), String.valueOf(latitude) + String.valueOf(longitude));
                         steps.remove(0);
                         for (int i = 0; i < steps.size(); i++) { //debug
