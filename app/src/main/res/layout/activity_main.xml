@@ -68,7 +68,4 @@
         android:backgroundTint="#00BCD4"
         android:text="Navigate" />
 
-
-
-
 </LinearLayout>

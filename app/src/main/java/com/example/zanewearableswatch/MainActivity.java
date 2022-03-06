@@ -7,9 +7,11 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -69,54 +71,6 @@ public class MainActivity extends AppCompatActivity {
     String key = "AIzaSyAUkJ-ObhbadMLikRQZ3i2_L79WB7Fug3Q"; //add api key
     String mode = "";
     ArrayList<Step> steps = new ArrayList<Step>();
-
-    //POJO for step data parsed from call to Directions API
-    private class Step {
-        private String instruction;
-        private String maneuver;
-        private int distance;
-        private int duration;
-        private LatLng startLocation;
-        private LatLng endLocation;
-
-        public Step() {
-            instruction = "";
-            maneuver = "";
-            distance = 0;
-            duration = 0;
-            startLocation = null;
-            endLocation = null;
-        }
-
-        public Step(String ins, String man, int dis, int dur, LatLng start, LatLng end) {
-            instruction = ins;
-            maneuver = man;
-            distance = dis;
-            duration = dur;
-            startLocation = start;
-            endLocation = end;
-        }
-
-        public String getInstruction()  {return instruction;}
-        public String getManeuver()     {return maneuver;}
-        public int getDistance()        {return distance;}
-        public int getDuration()        {return duration;}
-        public LatLng getStart()        {return startLocation;}
-        public LatLng getEnd()          {return endLocation;}
-
-        public void setInstruction(String ins)  {instruction = ins;}
-        public void setManeuver(String man)     {maneuver = man;}
-        public void setDistance(int dis)        {distance = dis;}
-        public void setDuration(int dur)        {duration = dur;}
-        public void setStart(LatLng start)      {startLocation = start;}
-        public void setEnd(LatLng end)          {endLocation = end;}
-
-        public String toString() {
-            String[] arr = {instruction, maneuver, String.valueOf(distance), String.valueOf(distance),
-                    startLocation.toString(), endLocation.toString()};
-            return Arrays.stream(arr).collect(Collectors.joining(", "));
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -202,19 +156,9 @@ public class MainActivity extends AppCompatActivity {
 
     void startService() {
         Intent intent = new Intent(MainActivity.this, LocationService.class);
+        intent.putExtra("steps", new Gson().toJson(steps));
         startService(intent);
     }
-
-    /*
-    public String printJSONArray (JSONArray jArr) {
-        for(int i = 0; i < jArr.length();i++) {
-            JSONObject innerObj = jArr.getJSONObject(i);
-            for(Iterator it = innerObj.keys(); it.hasNext(); ) {
-                String key = (String)it.next();
-                System.out.println(key + ":" + innerObj.get(key));
-            }
-        }
-    }*/
 
     private class ResponseListener implements Response.Listener<JSONObject>{
         @Override
@@ -253,6 +197,8 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0; i < steps.size(); i++) { //debug
                     Log.d(String.valueOf(i), steps.get(i).toString());
                 }
+
+                startService(); //'restart' service, passing in newly filled 'steps' as json
             }
             catch (JSONException e) {
                 new AlertDialog.Builder(MainActivity.this)
