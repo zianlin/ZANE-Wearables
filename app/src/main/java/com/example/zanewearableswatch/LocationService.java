@@ -54,9 +54,13 @@ public class LocationService extends Service {
                     Location target = new Location("target");
                     target.setLatitude((steps.get(0).getStart()).lat);
                     target.setLongitude((steps.get(0).getStart()).lng);
-                    if(location.distanceTo(target) < 25) { //25 meters
+                    Log.d("distance to next step", String.valueOf(location.distanceTo(target)));
+                    if(location.distanceTo(target) < 50) { //50 meters
                         Log.d(String.valueOf(getDirection(steps.get(0).getManeuver())), String.valueOf(latitude) + String.valueOf(longitude));
                         steps.remove(0);
+                        for (int i = 0; i < steps.size(); i++) { //debug
+                            Log.d(String.valueOf(i), steps.get(i).toString());
+                        }
                     }
                 }
             }
@@ -88,8 +92,8 @@ public class LocationService extends Service {
     }
 
     private char getDirection(String maneuver) {
-        if (maneuver.endsWith("LEFT")) return 'l';
-        if (maneuver.endsWith("RIGHT")) return 'r';
+        if (maneuver.endsWith("left")) return 'l';
+        if (maneuver.endsWith("right")) return 'r';
         else return 'f';
     }
 
