@@ -83,4 +83,12 @@
         android:backgroundTint="#232f3b"
         android:text="Navigate" />
 
+    <Button
+        android:id="@+id/connect"
+        android:layout_width="353dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="0dp"
+        android:backgroundTint="#232f3b"
+        android:text="Connect Watch" />
+
 </LinearLayout>

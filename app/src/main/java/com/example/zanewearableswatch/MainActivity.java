@@ -7,6 +7,9 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -55,6 +58,8 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -62,6 +67,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -77,7 +83,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //start service that continuously gets lat and long of user
+        //ask for bluetooth permission
+        if ((Build.VERSION.SDK_INT >= 23) && (ActivityCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 1);
+        }
+
+        //start service that continuously gets lat and long of user, get location permission
         if ((Build.VERSION.SDK_INT >= 23) && (ActivityCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
@@ -145,6 +157,58 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("url", url);
                 JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url, null, new ResponseListener(), new ErrorListener());
                 queue.add(jsonRequest);
+            }
+        });
+
+        Button connectButton = findViewById(R.id.connect);
+        connectButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+                BluetoothDevice hc05 = btAdapter.getRemoteDevice("20:16:08:10:73:46");
+                System.out.println(hc05.getName());
+
+                try {
+                    if(!btAdapter.isEnabled()){
+                        btAdapter.enable();
+                    }
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+                BluetoothSocket btSocket = null;
+                int counter = 0;
+                do {
+                    try {
+                        btSocket = hc05.createRfcommSocketToServiceRecord(hc05.getUuids()[0].getUuid());
+                        System.out.println(counter + ": " + btSocket);
+                        btSocket.connect();
+                        System.out.println(btSocket.isConnected());
+                    } catch (IOException e) {
+                        try {
+                            btSocket = (BluetoothSocket)(hc05.getClass().getMethod("createInsecureRfcommSocket", new Class[] { int.class })).invoke(hc05, 1);
+                        }
+                        catch (Exception e2) {
+                            e2.printStackTrace();
+                        }
+
+                    }
+                    counter++;
+                } while (!btSocket.isConnected() && counter < 10);
+
+                try {
+                    OutputStream outputStream = btSocket.getOutputStream();
+                    outputStream.write('r');
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    btSocket.close();
+                    System.out.println(btSocket.isConnected());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
