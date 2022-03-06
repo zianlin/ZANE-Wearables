@@ -2,11 +2,14 @@ package com.example.zanewearableswatch;
 
 import android.Manifest;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,10 +37,13 @@ public class LocationService extends Service {
     ArrayList<Step> steps = new ArrayList<Step>();
     FusedLocationProviderClient flpc;
     LocationCallback locationCallback;
+    Vibrator vibrator;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
         //get current location every 5 seconds
         flpc = LocationServices.getFusedLocationProviderClient(this);
         locationCallback = new LocationCallback() {
@@ -55,9 +61,12 @@ public class LocationService extends Service {
                     target.setLatitude((steps.get(0).getStart()).lat);
                     target.setLongitude((steps.get(0).getStart()).lng);
                     Log.d("distance to next step", String.valueOf(location.distanceTo(target)));
-                    if(location.distanceTo(target) < 50) { //50 meters
+
+                    if(location.distanceTo(target) < 100) { //50 meters
                         if (steps.size() == 1) Log.d("d", "You are here!");
-                        Log.d(String.valueOf(getDirection(steps.get(0).getManeuver())), String.valueOf(latitude) + String.valueOf(longitude));
+                        char dir = getDirection(steps.get(0).getManeuver());
+                        vibrateTH(dir);
+                        Log.d(String.valueOf(dir), String.valueOf(latitude) + String.valueOf(longitude));
                         steps.remove(0);
                         for (int i = 0; i < steps.size(); i++) { //debug
                             Log.d(String.valueOf(i), steps.get(i).toString());
@@ -96,6 +105,36 @@ public class LocationService extends Service {
         if (maneuver.endsWith("left")) return 'l';
         if (maneuver.endsWith("right")) return 'r';
         else return 'f';
+    }
+
+    private void vibrateTH(char dir) {
+        switch (dir) {
+            case 'l':
+                VibrationEffect vibeEffectL = null;
+                long[] wave_time = {500, 0, 500, 0};
+                int[] wave_ampl = {255, 0, 255, 0};
+                vibeEffectL = VibrationEffect.createWaveform(wave_time, wave_ampl, -1);
+                vibrator.cancel();
+                vibrator.vibrate(vibeEffectL);
+                break;
+            case 'r':
+                VibrationEffect vibeEffectR = null;
+                long[] wave_time2 = {500, 0, 500, 0, 500, 0, 500, 0, 500};
+                int[] wave_ampl2 = {50, 0, 100, 0, 150, 0, 200, 0, 255};
+                vibeEffectR = VibrationEffect.createWaveform(wave_time2, wave_ampl2, -1);
+                vibrator.cancel();
+                vibrator.vibrate(vibeEffectR);
+                break;
+            case 'f':
+                //VibrationEffect vibeEffectF = VibrationEffect.createPredefined(VibrationEffect.EFFECT_HEAVY_CLICK);
+                VibrationEffect vibeEffectF = null;
+                long[] wave_time3 = {500, 500, 500, 500};
+                int[] wave_ampl3 = {255, 255, 255, 255};
+                vibeEffectF = VibrationEffect.createWaveform(wave_time3, wave_ampl3, -1);
+                vibrator.cancel();
+                vibrator.vibrate(vibeEffectF);
+                break;
+        }
     }
 
     private void requestLocation() {

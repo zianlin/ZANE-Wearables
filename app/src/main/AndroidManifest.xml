@@ -16,6 +16,7 @@
         android:name="android.software.leanback"
         android:required="true" />
 
+    <uses-permission android:name="android.permission.VIBRATE" />
     <application
 
         android:allowBackup="true"

@@ -98,6 +98,15 @@ public class MainActivity extends AppCompatActivity {
             startService();
         }
 
+        //vibration service
+        if ((ActivityCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.VIBRATE) != PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.VIBRATE}, 1);
+        }
+        else {
+            startService();
+        }
+
         ImageButton bikeButton = findViewById(R.id.bikeButton);
         ImageButton walkButton = findViewById(R.id.walkButton);
         ImageButton carButton = findViewById(R.id.carButton);
