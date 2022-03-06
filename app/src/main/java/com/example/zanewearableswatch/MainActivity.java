@@ -203,10 +203,6 @@ public class MainActivity extends AppCompatActivity {
 
                     steps.add(step);
                 }
-                for (int i = 0; i < steps.size(); i++) { //debug
-                    Log.d(String.valueOf(i), steps.get(i).toString());
-                }
-
                 startService(); //'restart' service, passing in newly filled 'steps' as json
             }
             catch (JSONException e) {

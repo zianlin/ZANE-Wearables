@@ -74,7 +74,7 @@ public class LocationService extends Service {
         Type type = new TypeToken<List<Step>>() {}.getType();
         steps = new Gson().fromJson(intent.getStringExtra("steps"), type);
         for (int i = 0; i < steps.size(); i++) { //debug
-            Log.d("service", steps.get(i).toString());
+            Log.d(String.valueOf(i), steps.get(i).toString());
         }
 
         requestLocation(); //start requesting location every 5 seconds
