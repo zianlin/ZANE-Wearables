@@ -74,14 +74,16 @@ import java.util.stream.Collectors;
 public class MainActivity extends AppCompatActivity {
     String origin = ""; //find a way to get the user's current location
     String destination = "";
-    String key = "AIzaSyAUkJ-ObhbadMLikRQZ3i2_L79WB7Fug3Q"; //add api key
     String mode = "";
+    String key = "";
     ArrayList<Step> steps = new ArrayList<Step>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        key = this.getString(R.string.api_key); //get api key from strings.xml
 
         //ask for bluetooth permission
         if ((Build.VERSION.SDK_INT >= 23) && (ActivityCompat.checkSelfPermission(MainActivity.this,
