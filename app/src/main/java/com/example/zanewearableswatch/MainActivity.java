@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button connectButton = findViewById(R.id.connect);
+        /*Button connectButton = findViewById(R.id.connect);
         connectButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -219,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-        });
+        });*/
     }
 
     @Override
