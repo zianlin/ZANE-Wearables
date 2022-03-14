@@ -1,4 +1,4 @@
-# Directional Haptic Feedback Application from ZANE Wearables
+# Labyrinth - A directional haptic feedback application from ZANE Wearables.
 **ZANE Wearables is Zian Lin, Amy Koh, and Niklas Chang.**
 
 Developed for IEEE's QP program. Won 'Most Technical' award at IEEE'S WI22 QP Showcase.
